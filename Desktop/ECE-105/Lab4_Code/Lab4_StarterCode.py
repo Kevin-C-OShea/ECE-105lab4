@@ -61,7 +61,6 @@ triangle(x) returns [3, 1, 0, 1, 3]
 def ramp(x):
     # replace np.zeros_like(x) with np.where(...)
     return np.where(x >=0, x, 0)
-
 # Triangle: |x| on [-pi, pi); repeats every 2 pi
 def triangle(x):
     # replace np.zeros_like(x) with np.where(...)
@@ -102,11 +101,19 @@ and b_n is about 2 / (pi n) for odd n, about 0 for even n
 # The coefficients a0, a, b of f, with broadcasting
 def coefficients(f, N, M=4096):
     # 1. x, fx, and n
-    
+    x =np.linspace(0, 2*np.pi, M, endpoint=False)
+    fx=f(x)
+    n = np.arange(1, N+1)
     # 2. a0
-    
+    a0 = np.mean(fx)
     # 3.-4. a and b, each of shape (N,) (replace 0 and the zeros)
-    return 0, np.zeros(N), np.zeros(N)
+    cos_table = np.cos(x[:, None]*n)
+    sin_table = np.sin(x[:, None]*n)
+
+    a = 2*np.mean(fx[:,None]*cos_table, axis=0)
+    b = 2*np.mean(fx[:,None]*sin_table, axis=0)
+    return a0, a, b
+
 
 """
 COMPLETE (#3, with broadcasting, no loop):
