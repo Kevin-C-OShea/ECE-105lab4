@@ -60,12 +60,12 @@ triangle(x) returns [3, 1, 0, 1, 3]
 # Ramp: 0 on [-pi, 0), x on [0, pi); repeats every 2 pi
 def ramp(x):
     # replace np.zeros_like(x) with np.where(...)
-    return np.zeros_like(x)
-
+    return np.where(x >=0, x, 0)
 # Triangle: |x| on [-pi, pi); repeats every 2 pi
 def triangle(x):
     # replace np.zeros_like(x) with np.where(...)
-    return np.zeros_like(x)
+    x=wrap(x)
+    return np.where(x <=0, -x,x)
 
 # M sample points on one period: cut [-pi, pi) into M equal pieces,
 # and take the middle of each (so no point falls on a jump)
@@ -103,7 +103,7 @@ def coefficients(f, N, M=4096):
     # 1. x, fx, and n
     x =np.linspace(0, 2*np.pi, M, endpoint=False)
     fx=f(x)
-    n = np.arrange(a, N+1)
+    n = np.arange(1, N+1)
     # 2. a0
     a0 = np.mean(fx)
     # 3.-4. a and b, each of shape (N,) (replace 0 and the zeros)
@@ -130,11 +130,11 @@ Example: fs(x, 1.0, np.array([0.0]), np.array([2.0])) returns
 # The sum of the first len(a) terms of the Fourier series, at x
 def fs(x, a0, a, b):
     # 1. n
-    pass
+    n= np.arrange(1, len(a) +1)
     # 2. terms
-    pass
+    terms = a * np.cos(x[:, None] * n) + b * np.sin(x[:, None] * n)
     # 3. return (replace np.zeros_like(x))
-    return np.zeros_like(x)
+    return a0/2+np.sum(terms, axis=1)
 
 # Plot each signal (black) and its Fourier sums, N terms for each N
 def plot_fourier(signals, coefs, Ns, filename):
